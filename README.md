@@ -12,14 +12,15 @@ Step 3:
 - ```pip3 install -r requirements.txt```
 
 Step 4:
-- Download the MovieLens Dataset from https://www.kaggle.com/datasets/grouplens/movielens-20m-dataset and add it to the dataset/ directory
+- Create a /dataset directory in the environment.
+- Download the MovieLens Dataset from https://www.kaggle.com/datasets/grouplens/movielens-20m-dataset and add it to the dataset/ directory.
 
 Step 5:
 - Run initial.py
 - ```python3 initial.py```
   
 Step 6:
-- Start and use the application by running the app.py
+- Start and use the application by running the app.py.
 - ```python3 app.py```
 
 ## References
