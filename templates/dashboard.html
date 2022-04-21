@@ -1,0 +1,129 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='dashboard.css')}}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+     
+{% endblock %}
+
+{% block content %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Recommender Systems</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">Hi {{ name }}</a></li>
+            <li class="active"><a href="#">Dashboard</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="{{ url_for('logout') }}">Log Out</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    
+    <div class="search-input">
+      <form class="form-signin" method="POST" action="/dashboard">
+        <h2 class="form-signin-heading" style="align-content: center;">Movie Finder</h2>
+        {{ form.hidden_tag() }}
+        {{ wtf.form_field(form.moviename, class="form-control") }}
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Add</button>
+      </form>
+      <div id="result"></div>
+      <script>
+        $(document).ready(function(){
+          var movies=[];
+          function loadMovies(){
+            $.getJSON('/movies', function(data, status, xhr){
+            for (var i = 0; i < data.length; i++ ) {
+              movies.push(data[i].name);
+            }
+          });
+          };
+          loadMovies();
+         
+          $('#moviename').autocomplete({
+            source: movies, 
+          }); 
+          
+          $('form').on('submit', function(e){
+            $.ajax({
+            data: {
+              movie:$('#moviename').val()
+            },
+            type: 'POST',
+            url : '/process'
+            })
+            .done(function(data){ 
+            if (data.error){
+              $('#result').text(data.error).show();
+            }
+            else {
+              $('#result').html(data.country).show()
+            }
+            })
+            e.preventDefault();
+          });
+        }); 
+        </script>
+
+        </body>
+        </html>
+    </div>
+
+    <div class="container container-fluid">
+      <div class="row">
+          <h2 class="sub-header" style="text-align: center">Viewership History</h2>
+          <div class="table-responsive">
+            {% if movielist|length < 1 %}
+              <h4 style="text-align: center">There is no Viewership History. Add movies using the Movie Finder!</h4>
+            {% else %}
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>MovieID</th>
+                  <th>Movie Name</th>
+                  <th>Genres</th>
+                  <th>Rating</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for movie in movielist %}
+                <tr>
+                  <td>{{ movie.movieId }}</td>
+                  <td>{{ movie.title }}</td>
+                  <td>{{ movie.genres }}</td>
+                  <td>{{ "%.2f"|format(movie.rating) }}</td>
+                  <td>
+                    <a href="/delete/{{movie.id}}">Delete</a>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+            {% endif %}
+          </div>
+          <a href="{{ url_for('recommendations') }}">
+            <button class="btn btn-lg btn-primary btn-block">
+                Recommend
+            </button>
+          </a>
+        </div>
+      </div>
+    </div>
+{% endblock %}

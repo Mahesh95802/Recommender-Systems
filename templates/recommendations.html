@@ -1,0 +1,71 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='dashboard.css')}}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+{% endblock %}
+
+{% block content %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Recommender Systems</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">Hi {{ name }}</a></li>
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="{{ url_for('logout') }}">Log Out</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container container-fluid">
+      <div class="row">
+          <h2 class="sub-header" style="text-align: center">Recommendations</h2>
+          <div class="table-responsive">
+            {% if movielist|length < 1 %}
+              <h4 style="text-align: center">There is no Recommendations. Add movies using the Movie Finder!</h4>
+            {% else %}
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>MovieID</th>
+                  <th>Movie Name</th>
+                  <th>Genres</th>
+                  <th>Rating</th>
+                  <th>Propensity %</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for i in movielist.index %}
+                <tr>
+                  <td>{{ movielist['movieId'][i] }}</td>
+                  <td>{{ movielist['title'][i] }}</td>
+                  <td>{{ movielist['genres'][i] }}</td>
+                  <td>{{ "%.2f"|format(movielist['rating'][i]) }}</td>
+                  <td>{{ "%.2f"|format(movielist['propensity'][i]) }}</td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
