@@ -1,0 +1,23 @@
+# Recommender-Systems
+
+Step 1: 
+  Create and activate the virtual enviroment using virtualenv.
+  
+Step 2:
+  Clone the repository into the environment.
+  ```git clone https://github.com/Mahesh95802/Recommender-Systems.git```
+  
+Step 3:
+  Install the requirements.
+  ```pip3 install -r requirements.txt```
+
+Step 4:
+  Download the MovieLens Dataset from add it to the dataset/ directory
+
+Step 5:
+  Run initial.py
+  ```python3 initial.py```
+  
+Step 6:
+  Start and use the application by running the app.py
+  ```python3 app.py```
