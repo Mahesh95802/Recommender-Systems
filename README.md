@@ -21,3 +21,8 @@ Step 5:
 Step 6:
 - Start and use the application by running the app.py
 - ```python3 app.py```
+
+## References
+- https://www.youtube.com/watch?v=9-HKxxgbsJ8 --> collabarative/content/hybrid Filtering
+- https://www.youtube.com/watch?v=Pc8WdnIdXZg --> Flask Implementation
+- https://www.youtube.com/watch?v=8aTnmsDMldY --> Login System
