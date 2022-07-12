@@ -8,11 +8,21 @@ def filteringSuggestions(movieNames):
     collaborativeFilteringLatentMatrix = pd.read_pickle("data/collaborativeFiltering.pkl")
     movieDict = dict()
     for movie in movieNames:
-        contentArray = np.array(contentFilteringLatentMatrix.loc[ movie ]).reshape(1,-1)
-        contentScore = cosine_similarity(contentFilteringLatentMatrix, contentArray).reshape(-1)
-        collaborativeArray = np.array(collaborativeFilteringLatentMatrix.loc[ movie ]).reshape(1,-1)
-        collaborativescore = cosine_similarity(collaborativeFilteringLatentMatrix, collaborativeArray).reshape(-1)
-        score = (contentScore + collaborativescore)/2
+        score = 0
+        try:
+            contentArray = np.array(contentFilteringLatentMatrix.loc[ movie ]).reshape(1,-1)
+            contentScore = cosine_similarity(contentFilteringLatentMatrix, contentArray).reshape(-1)
+            score += contentScore
+        except:
+            pass
+        try:
+            collaborativeArray = np.array(collaborativeFilteringLatentMatrix.loc[ movie ]).reshape(1,-1)
+            collaborativeScore = cosine_similarity(collaborativeFilteringLatentMatrix, collaborativeArray).reshape(-1)
+            if(score>0):
+                score += collaborativeScore
+                score /= 2
+        except:
+            pass
         df = {"hybrid":score}
         similar = pd.DataFrame(df, index = contentFilteringLatentMatrix.index)
         similar.sort_values("hybrid", ascending=False, inplace=True)
@@ -27,5 +37,5 @@ def filteringSuggestions(movieNames):
         while(len(movieDict)>25):
             movieDict.popitem()
     movieRecommendations = pd.DataFrame({"title":movieDict.keys(), "propensity":movieDict.values()})
-    #print(movieRecommendations)
+    # print(movieRecommendations)
     return movieRecommendations
