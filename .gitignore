@@ -1,3 +1,7 @@
+*.pyc
+
+!/.gitignore
+
 __pycache__/
 data/
 dataset/
