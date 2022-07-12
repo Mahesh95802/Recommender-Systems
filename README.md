@@ -24,6 +24,6 @@ Step 6:
 - ```python3 app.py```
 
 ## References
-- https://www.youtube.com/watch?v=9-HKxxgbsJ8 --> collabarative/content/hybrid Filtering
+- https://www.youtube.com/watch?v=9-HKxxgbsJ8 --> Hybrid Filtering
 - https://www.youtube.com/watch?v=Pc8WdnIdXZg --> Flask Implementation
 - https://www.youtube.com/watch?v=8aTnmsDMldY --> Login System
