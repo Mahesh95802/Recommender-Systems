@@ -1,4 +1,4 @@
-from pickle import TRUE
+from pickle import FALSE, TRUE
 from flask import Flask, render_template, redirect, url_for, request, json, jsonify
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
@@ -10,12 +10,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import pandas as pd
 
-from Python.contentFilteringSuggestions import contentFilteringSuggestions
+from python.FilteringSuggestions import filteringSuggestions
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = TRUE
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = FALSE
 app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data/database.db'
 bootstrap = Bootstrap(app)
 db = SQLAlchemy(app)
 login_manager = LoginManager()
@@ -87,10 +87,13 @@ def signup():
     form = RegisterForm()
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data, method='sha256')
-        new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
-        return redirect(url_for('message', message="New User has been Created!!"))
+        try:
+            new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+            db.session.add(new_user)
+            db.session.commit()
+            return redirect(url_for('message', message="New User has been Created!!"))
+        except:
+            return redirect(url_for('message', message="User already exists!!"))
     return render_template('signup.html', form=form)
 
 @app.route('/message')
@@ -103,23 +106,29 @@ def message():
 def dashboard():
     form = MovieSearchForm()
     if form.validate_on_submit():
-        new_movie = ViewershipHistory(username=current_user.username, moviename=form.moviename.data)
-        db.session.add(new_movie)
-        db.session.commit()
-        return redirect(url_for('dashboard'))
-        #return str(contentFilteringSuggestions(str(form.moviename.data)))
-    else:
         movienames = movies.query.add_columns(movies.title).all()
-        movielist = ViewershipHistory.query.join(movies, movies.title==ViewershipHistory.moviename).add_columns(ViewershipHistory.id, ViewershipHistory.username, movies.movieId, movies.title, movies.genres, movies.rating).filter(ViewershipHistory.username==current_user.username).all()
         movienames = [ j for i,j in movienames]
-        return render_template('dashboard.html', name=current_user.username, form=form, movielist=movielist, movienames=movienames)
+        if form.moviename.data in movienames:
+            usermovielist = ViewershipHistory.query.join(movies, movies.title==ViewershipHistory.moviename).add_columns(movies.title).filter(ViewershipHistory.username==current_user.username).all()
+            usermovielist = [ j for i,j in usermovielist]
+            if form.moviename.data not in usermovielist:
+                try:
+                    new_movie = ViewershipHistory(username=current_user.username, moviename=form.moviename.data)
+                    db.session.add(new_movie)
+                    db.session.commit()
+                except:
+                    return redirect(url_for('dashboard'))
+        return redirect(url_for('dashboard'))
+    else:
+        movielist = ViewershipHistory.query.join(movies, movies.title==ViewershipHistory.moviename).add_columns(ViewershipHistory.id, ViewershipHistory.username, movies.movieId, movies.title, movies.genres, movies.rating).filter(ViewershipHistory.username==current_user.username).all()
+        return render_template('dashboard.html', name=current_user.username, form=form, movielist=movielist)
 
 @app.route('/movies')
 @login_required
 def moviedic():
- res = movies.query.all()
- moviedictlist = [r.as_dict() for r in res]
- return jsonify(moviedictlist)
+    movienames = movies.query.add_columns(movies.title).all()
+    movienames = [ j for i,j in movienames]
+    return jsonify(movienames)
 
 @app.route('/delete/<int:id>')
 @login_required
@@ -137,7 +146,7 @@ def delete(id):
 def recommendations():
     movieList = ViewershipHistory.query.join(movies, movies.title==ViewershipHistory.moviename).add_columns(ViewershipHistory.id, ViewershipHistory.username, movies.movieId, movies.title, movies.genres, movies.rating).filter(ViewershipHistory.username==current_user.username).all()
     movieNames = [ movie.title for movie in movieList]
-    movieRecommendations = contentFilteringSuggestions(movieNames)
+    movieRecommendations = filteringSuggestions(movieNames)
     movieDf = pd.DataFrame(movies.query.add_columns(movies.movieId, movies.title, movies.genres, movies.rating).all())
     movieDf.drop(["movies"], axis=1)
     recommendationList = pd.merge(left = movieRecommendations, right = movieDf, how = 'inner', on = 'title' )

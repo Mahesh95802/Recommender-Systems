@@ -7,10 +7,61 @@ Dashboard
 
 {% block styles %}
 {{super()}}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js"></script>
+<script>
+  $(document).ready(function(){
+    const searchWrapper = document.querySelector(".search-input");
+    const suggBox = searchWrapper.querySelector(".autocom-box");
+    var movies=[];
+    function loadMovies(){
+      $.getJSON('/movies', function(data, status, xhr){
+      for (var i = 0; i < data.length; i++ ) {
+        movies.push(data[i]);
+      }
+    });
+    };
+    loadMovies();
+    console.log(movies)
+    function showSuggestions(list){
+      let listData;
+      
+    }
+    document.getElementById('moviename').addEventListener('input', function() {
+      currMovie = this.value;
+      var emptyArray = [];
+      if(currMovie){
+        emptyArray = movies.filter((data)=>{
+          return data.toLocaleLowerCase().includes(currMovie.toLocaleLowerCase());
+        });
+        console.log(emptyArray);
+        emptyArray = emptyArray.map((data)=>{
+            return data = `<p onclick="select(this)"><a style="text-decoration: none">${data}</a></p>`;
+        });
+      } else{
+        searchWrapper.classList.remove("active"); //hide autocomplete box
+      }
+      let listData;
+      if(!emptyArray.length){
+          userValue = this.value;
+          listData = `<p>${userValue}</p>`;
+      }else{
+        listData = emptyArray.join('');
+      }
+      // console.log(listData)
+      suggBox.innerHTML = listData;
+    });
+  }); 
+  function select(element){
+      let selectData = element.textContent;
+      console.log(selectData);
+      document.getElementById('moviename').value = selectData;
+      searchWrapper.classList.remove("active");
+  }
+</script>
 <link rel="stylesheet" href="{{url_for('.static', filename='dashboard.css')}}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-     
+
 {% endblock %}
 
 {% block content %}
@@ -35,54 +86,16 @@ Dashboard
         </div>
       </div>
     </nav>
-    
+
     <div class="search-input">
       <form class="form-signin" method="POST" action="/dashboard">
         <h2 class="form-signin-heading" style="align-content: center;">Movie Finder</h2>
         {{ form.hidden_tag() }}
         {{ wtf.form_field(form.moviename, class="form-control") }}
+        <div class="autocom-box" style="max-width: 100vh; text-align: center;"></div>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Add</button>
       </form>
       <div id="result"></div>
-      <script>
-        $(document).ready(function(){
-          var movies=[];
-          function loadMovies(){
-            $.getJSON('/movies', function(data, status, xhr){
-            for (var i = 0; i < data.length; i++ ) {
-              movies.push(data[i].name);
-            }
-          });
-          };
-          loadMovies();
-         
-          $('#moviename').autocomplete({
-            source: movies, 
-          }); 
-          
-          $('form').on('submit', function(e){
-            $.ajax({
-            data: {
-              movie:$('#moviename').val()
-            },
-            type: 'POST',
-            url : '/process'
-            })
-            .done(function(data){ 
-            if (data.error){
-              $('#result').text(data.error).show();
-            }
-            else {
-              $('#result').html(data.country).show()
-            }
-            })
-            e.preventDefault();
-          });
-        }); 
-        </script>
-
-        </body>
-        </html>
     </div>
 
     <div class="container container-fluid">
