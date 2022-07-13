@@ -8,22 +8,14 @@ def filteringSuggestions(movieNames):
     collaborativeFilteringLatentMatrix = pd.read_pickle("data/collaborativeFiltering.pkl")
     movieDict = dict()
     for movie in movieNames:
-        score = 0
-        try:
-            contentArray = np.array(contentFilteringLatentMatrix.loc[ movie ]).reshape(1,-1)
-            contentScore = cosine_similarity(contentFilteringLatentMatrix, contentArray).reshape(-1)
-            score += contentScore
-        except:
-            pass
-        
+        contentArray = np.array(contentFilteringLatentMatrix.loc[ movie ]).reshape(1,-1)
+        contentScore = cosine_similarity(contentFilteringLatentMatrix, contentArray).reshape(-1)
+        score = contentScore
         try:
             collaborativeArray = np.array(collaborativeFilteringLatentMatrix.loc[ movie ]).reshape(1,-1)
             collaborativeScore = cosine_similarity(collaborativeFilteringLatentMatrix, collaborativeArray).reshape(-1)
-            if(score>0):
-                score += collaborativeScore
-                score /= 2
-            else:
-                score += collaborativeScore
+            score += collaborativeScore
+            score /= 2
         except:
             pass
 

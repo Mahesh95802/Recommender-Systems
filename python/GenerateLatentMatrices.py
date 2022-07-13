@@ -99,7 +99,7 @@ def generateLatentMatrices():
     except:
         print("There was a problem in Saving the Collaborative Filtering Latent Matrix")
 
-    print("ContentFiltering Latent Matrix generated")
+    print("CollaborativeFiltering Latent Matrix generated")
 
     print("Latent Matrices Generated")
 

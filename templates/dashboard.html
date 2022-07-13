@@ -22,11 +22,8 @@ Dashboard
     });
     };
     loadMovies();
-    console.log(movies)
-    function showSuggestions(list){
-      let listData;
-      
-    }
+    // console.log(movies)
+    
     document.getElementById('moviename').addEventListener('input', function() {
       currMovie = this.value;
       var emptyArray = [];
@@ -53,10 +50,10 @@ Dashboard
     });
   }); 
   function select(element){
-      let selectData = element.textContent;
-      console.log(selectData);
-      document.getElementById('moviename').value = selectData;
-      searchWrapper.classList.remove("active");
+    let selectData = element.textContent;
+    console.log(selectData);
+    document.getElementById('moviename').value = selectData;
+    searchWrapper.classList.remove("active");
   }
 </script>
 <link rel="stylesheet" href="{{url_for('.static', filename='dashboard.css')}}">
