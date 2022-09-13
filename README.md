@@ -23,6 +23,9 @@ Step 6:
 - Start and use the application by running the app.py.
 - ```python3 app.py```
 
+## Website
+https://flask-hybrid-movie-rs.herokuapp.com/
+
 ## References
 - https://www.youtube.com/watch?v=9-HKxxgbsJ8 --> Hybrid Filtering
 - https://www.youtube.com/watch?v=Pc8WdnIdXZg --> Flask Implementation
