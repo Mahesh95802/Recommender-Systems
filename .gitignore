@@ -1,0 +1,12 @@
+*.pyc
+
+/.env
+/env
+
+
+!/.gitignore
+
+__pycache__/
+data/
+dataset/
+python/__pycache__/

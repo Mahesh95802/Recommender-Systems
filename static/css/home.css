@@ -1,0 +1,14 @@
+body {
+  background-image: url("../img/background.jpeg");
+  padding-top: 50px;
+}
+
+.Home-Text {
+  padding: 40px 15px;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 10vh;
+  color: gray;
+}
